@@ -63,9 +63,6 @@ The API provides the following endpoints:
 4. Push your branch to your forked repository.
 5. Submit a pull request to the main repository.
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 ## Testing
 
@@ -73,3 +70,21 @@ To run the tests, use the following command:
 ```
 python -m unittest discover tests
 ```
+
+
+## Sample Outputs
+
+### Bullock Cart Detection
+![Bullock Cart](bull.png)
+
+### Tractor Detection
+![Tractor](tractor.png)
+
+### Truck Detection
+![Truck](truck.png)
+
+### Number Plate Detection
+![Number Plate](numberplate.png)
+
+### Sugarcane Detection
+![Sugarcane](sugarcane.png)
