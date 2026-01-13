@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 5
+names: ['Tractor', 'Truck', 'bull', 'number plate', 'sugarcane']
+
+roboflow:
+  workspace: final-dataset-po6uz
+  project: final-dataset-52lol
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/final-dataset-po6uz/final-dataset-52lol/dataset/1

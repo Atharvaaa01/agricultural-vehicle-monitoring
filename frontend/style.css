@@ -1,0 +1,137 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #064e3b;
+}
+
+/* CONTAINER */
+.container {
+    width: 420px;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* FADE IN */
+.fade-in {
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 15px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* MICRO INTERACTION */
+.interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+
+/* INPUT */
+input[type="file"] {
+    width: 100%;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background: #22c55e;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+button:hover {
+    background: #16a34a;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* PREVIEW */
+.preview img {
+    width: 100%;
+    border-radius: 12px;
+    display: none;
+}
+
+/* RESULTS */
+.results div {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* POPUP */
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: popupFade 0.3s ease;
+}
+
+.popup-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    width: 300px;
+    text-align: center;
+    animation: popupScale 0.3s ease;
+}
+
+@keyframes popupFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popupScale {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+}
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.popup-card {
+    pointer-events: auto;
+}

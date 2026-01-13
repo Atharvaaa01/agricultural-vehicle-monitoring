@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agricultural Vision AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container fade-in">
+
+    <header>
+        <h1>🚜 Agricultural Vision AI</h1>
+        <p>Smart detection of vehicles, crops & number plates</p>
+    </header>
+
+    <section class="card interactive">
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="sendImage()">Analyze Image</button>
+    </section>
+
+    <section class="card preview interactive">
+        <img id="previewImage">
+    </section>
+
+    <section class="card results interactive">
+        <h2>Detection Results</h2>
+
+        <div>
+            <span>Vehicle Type</span>
+            <strong id="vehicleType">–</strong>
+        </div>
+
+        <div>
+            <span>Sugarcane</span>
+            <strong id="sugarcane">–</strong>
+        </div>
+
+        <div>
+            <span>Number Plate</span>
+            <strong id="plate">–</strong>
+        </div>
+
+        <div>
+            <span>Plate Color</span>
+            <strong id="plateColor">–</strong>
+        </div>
+    </section>
+
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+    <div class="popup-card">
+        <h3>✅ Analysis Complete</h3>
+        <p>The AI has finished analyzing your image.</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

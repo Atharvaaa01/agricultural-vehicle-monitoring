@@ -1,0 +1,41 @@
+# =====================
+# Python
+# =====================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =====================
+# Virtual Environment
+# =====================
+venv/
+.env/
+
+# =====================
+# YOLO / ML Artifacts
+# =====================
+runs/
+*.pt
+*.onnx
+*.engine
+
+# =====================
+# Dataset (large files)
+# =====================
+dataset/images/
+dataset/labels/
+dataset/train/
+dataset/valid/
+dataset/test/
+
+# =====================
+# Temporary Files
+# =====================
+temp_api_images/
+
+# =====================
+# OS Files
+# =====================
+.DS_Store
+Thumbs.db
