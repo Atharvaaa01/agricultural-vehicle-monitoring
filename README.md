@@ -1,89 +1,75 @@
-# 🚜 Agricultural Vehicle Monitoring System (Vision AI)
+# Agricultural Vehicle Monitoring System (Vision AI)
 
-An end-to-end **Computer Vision–based Agricultural Monitoring System** that detects agricultural vehicles, sugarcane loads, and number plates using **YOLOv8**, **Flask API**, and a **lightweight web frontend**.
+## Installation
 
-This project is designed for **smart agriculture, traffic monitoring, and compliance checking** use cases.
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/agricultural-vehicle-monitoring.git
+   ```
+2. Navigate to the project directory:
+   ```
+   cd agricultural-vehicle-monitoring
+   ```
+3. Create a virtual environment and activate it:
+   ```
+   python -m venv env
+   source env/bin/activate  # On Windows, use `env\Scripts\activate`
+   ```
+4. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
----
+## Usage
 
-## 📌 Features
+### Running the API Server
+1. Start the Flask API server:
+   ```
+   python run_api.py
+   ```
+   The API will be available at `http://localhost:5000`.
 
-✅ Detects **Agricultural Vehicles**
-- Tractor  
-- Truck  
-- Bullock Cart  
+### Running the Camera Detector
+1. Start the camera-based detection:
+   ```
+   python run_camera.py
+   ```
+   This will launch the camera detection and display the results.
 
-✅ Detects **Sugarcane Presence**
+### Interacting with the API
+1. You can use the provided `test_api.py` script to test the API:
+   ```
+   python test_api.py
+   ```
+   This will send a sample image to the API and print the response.
 
-✅ Detects **Number Plate Region**
-- Plate color detection
-- OCR intentionally disabled for reliability
+2. You can also test the number plate processing using `test_plate.py`:
+   ```
+   python test_plate.py
+   ```
+   This will load an image, extract the number plate text, and detect the plate color.
 
-✅ Supports:
-- Image upload via web UI
-- Real-time camera detection
-- REST API integration
+## API
 
----
+The API provides the following endpoints:
 
-## 🧠 Tech Stack
+- `POST /detect`: Accepts an image file and returns the detected objects and their bounding boxes.
 
-### 🔹 Machine Learning
-- YOLOv8 (Ultralytics)
-- PyTorch
-- OpenCV
+## Contributing
 
-### 🔹 Backend
-- Flask
-- Flask-CORS
-- REST API
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your branch to your forked repository.
+5. Submit a pull request to the main repository.
 
-### 🔹 Frontend
-- HTML
-- CSS (Glassmorphism UI)
-- Vanilla JavaScript (Fetch API)
+## License
 
-## 📂 Project Structure
-agricultural-vehicle-monitoring/
-│
-├── dataset/
-│ ├── train/
-│ ├── valid/
-│ ├── test/
-│ └── data.yaml
-│
-├── runs/
-│
-├── src/
-│ ├── api.py
-│ ├── inference.py
-│ ├── camera_detector.py
-│ ├── ocr_processor.py
-│ ├── plate_color_detector.py
-│
-├── frontend/
-│ ├── index.html
-│ ├── style.css
-│ └── script.js
-│
-├── run_api.py
-├── run_camera.py
-├── requirements.txt
-├── README.md
-└── yolov8n.pt
+This project is licensed under the [MIT License](LICENSE).
 
+## Testing
 
----
-
-## 📊 Model Classes
-
-| Class ID | Class Name |
-|--------:|-----------|
-| 0 | Tractor |
-| 1 | Truck |
-| 2 | Bullock Cart |
-| 3 | Number Plate |
-| 4 | Sugarcane |
-
----
-
+To run the tests, use the following command:
+```
+python -m unittest discover tests
+```
