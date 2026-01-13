@@ -75,16 +75,16 @@ python -m unittest discover tests
 ## Sample Outputs
 
 ### Bullock Cart Detection
-![Bullock Cart](bull.png)
+![Bullock Cart](assests/bull.png)
 
 ### Tractor Detection
-![Tractor](tractor.png)
+![Tractor](assests/tractor.png)
 
 ### Truck Detection
-![Truck](truck.png)
+![Truck](assests/truck.png)
 
 ### Number Plate Detection
-![Number Plate](numberplate.png)
+![Number Plate](assests/numberplate.png)
 
 ### Sugarcane Detection
-![Sugarcane](sugarcane.png)
+![Sugarcane](assests/sugarcane.png)
