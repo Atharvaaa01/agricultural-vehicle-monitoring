@@ -5,6 +5,7 @@ import numpy as np
 
 from src.inference import detect
 from src.plate_color_detector import detect_color
+from src.ocr_processor import extract_text   # ✅ ADD OCR
 
 app = Flask(__name__)
 CORS(app)
@@ -36,7 +37,8 @@ def detect_api():
         "vehicle_type": None,
         "sugarcane_detected": False,
         "number_plate": False,
-        "plate_color": None
+        "plate_color": None,
+        "plate_text": None          # ✅ NEW
     }
 
     best_vehicle_conf = 0.0
@@ -55,12 +57,23 @@ def detect_api():
         if cls == 4:
             response["sugarcane_detected"] = True
 
-        # NUMBER PLATE (NO OCR)
+        # NUMBER PLATE
         if cls == 3:
             x1, y1, x2, y2 = d["bbox"]
             plate_img = img[y1:y2, x1:x2]
+
+            if plate_img.size == 0:
+                continue
+
             response["number_plate"] = True
             response["plate_color"] = detect_color(plate_img)
+
+            # ✅ OCR TEXT
+            plate_text = extract_text(plate_img)
+            response["plate_text"] = plate_text
+
+            # only process ONE plate (important for accuracy)
+            break
 
     return jsonify(response), 200
 

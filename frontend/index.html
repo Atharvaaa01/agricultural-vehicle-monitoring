@@ -3,45 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Agricultural Vision AI</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Mobile responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <div class="container fade-in">
 
+    <!-- HEADER -->
     <header>
         <h1>🚜 Agricultural Vision AI</h1>
         <p>Smart detection of vehicles, crops & number plates</p>
     </header>
 
+    <!-- IMAGE INPUT -->
     <section class="card interactive">
         <input type="file" id="imageInput" accept="image/*">
-        <button onclick="sendImage()">Analyze Image</button>
+        <button id="analyzeBtn" onclick="sendImage()">Analyze Image</button>
     </section>
 
+    <!-- IMAGE PREVIEW -->
     <section class="card preview interactive">
-        <img id="previewImage">
+        <img id="previewImage" style="display:none;" alt="Image Preview">
     </section>
 
+    <!-- RESULTS -->
     <section class="card results interactive">
         <h2>Detection Results</h2>
 
-        <div>
+        <div class="result-row">
             <span>Vehicle Type</span>
             <strong id="vehicleType">–</strong>
         </div>
 
-        <div>
+        <div class="result-row">
             <span>Sugarcane</span>
             <strong id="sugarcane">–</strong>
         </div>
 
-        <div>
+        <div class="result-row">
             <span>Number Plate</span>
             <strong id="plate">–</strong>
         </div>
 
-        <div>
+        <div class="result-row">
             <span>Plate Color</span>
             <strong id="plateColor">–</strong>
         </div>
@@ -58,6 +67,8 @@
     </div>
 </div>
 
+<!-- SCRIPT -->
 <script src="script.js"></script>
+
 </body>
 </html>
