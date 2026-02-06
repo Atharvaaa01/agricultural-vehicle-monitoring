@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Agricultural Vision AI</title>
+    <title>RainTree Vision AI</title>
 
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
@@ -16,19 +16,19 @@
 
     <!-- HEADER -->
     <header>
-        <h1>🚜 Agricultural Vision AI</h1>
-        <p>Smart detection of vehicles, crops & number plates</p>
+        <h1>🚜 RainTree Vision </h1>
+        <p>Smart detection of vehicles & number plates</p>
     </header>
 
     <!-- IMAGE INPUT -->
     <section class="card interactive">
         <input type="file" id="imageInput" accept="image/*">
-        <button id="analyzeBtn" onclick="sendImage()">Analyze Image</button>
+        <button onclick="sendImage()">Analyze Image</button>
     </section>
 
     <!-- IMAGE PREVIEW -->
     <section class="card preview interactive">
-        <img id="previewImage" style="display:none;" alt="Image Preview">
+        <img id="previewImage" alt="Image Preview">
     </section>
 
     <!-- RESULTS -->
@@ -38,6 +38,11 @@
         <div class="result-row">
             <span>Vehicle Type</span>
             <strong id="vehicleType">–</strong>
+        </div>
+
+        <div class="result-row">
+            <span>Vehicle Color</span>
+            <strong id="vehicleColor">–</strong>
         </div>
 
         <div class="result-row">
@@ -67,8 +72,6 @@
     </div>
 </div>
 
-<!-- SCRIPT -->
 <script src="script.js"></script>
-
 </body>
 </html>

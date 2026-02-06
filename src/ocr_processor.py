@@ -5,11 +5,14 @@ import re
 # Initialize OCR reader once
 reader = easyocr.Reader(['en'], gpu=False)
 
+# Strict Indian plate format: AA00AA0000
+PLATE_PATTERN = re.compile(r'[A-Z]{2}[0-9]{2}[A-Z]{2}[0-9]{4}')
+
 def extract_text(image):
     if image is None or image.size == 0:
         return "UNKNOWN"
 
-    # 1️⃣ Resize (helps OCR a lot)
+    # 1️⃣ Resize (very important for OCR)
     image = cv2.resize(
         image, None,
         fx=2.5, fy=2.5,
@@ -19,12 +22,17 @@ def extract_text(image):
     # 2️⃣ Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # 3️⃣ Morphology to separate overlapping characters (IMPORTANT)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    gray = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
+    # 3️⃣ Adaptive threshold (better than OPEN for plates)
+    gray = cv2.adaptiveThreshold(
+        gray, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        31, 15
+    )
 
-    # 4️⃣ Noise removal
-    gray = cv2.bilateralFilter(gray, 11, 17, 17)
+    # 4️⃣ Morphology to close gaps between characters
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    gray = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
 
     # 5️⃣ OCR
     results = reader.readtext(
@@ -36,67 +44,32 @@ def extract_text(image):
     if not results:
         return "UNKNOWN"
 
-    # 6️⃣ Combine all OCR text (handles 1-line & 2-line plates)
-    text = "".join(results)
-    text = re.sub(r'[^A-Z0-9]', '', text)
+    # 6️⃣ Combine all OCR text
+    raw_text = "".join(results)
+    raw_text = re.sub(r'[^A-Z0-9]', '', raw_text)
 
-    # 7️⃣ Context-aware correction using Indian plate structure
-    # Format: LL DD LL DDDD
-    if len(text) >= 8:
-        chars = list(text)
+    # 7️⃣ CHARACTER CORRECTION (Indian plates)
+    corrected = []
 
-        # State code (letters only)
-        for i in [0, 1]:
-            if chars[i] in ['0', '1', '2', '5', '8']:
-                chars[i] = {
-                    '0': 'O',
-                    '1': 'I',
-                    '2': 'Z',
-                    '5': 'S',
-                    '8': 'B'
-                }.get(chars[i], chars[i])
+    for ch in raw_text:
+        corrected.append({
+            'O': '0',
+            'Q': '0',
+            'D': '0',
+            'I': '1',
+            'L': '1',
+            'Z': '2',
+            'S': '5',
+            'B': '8'
+        }.get(ch, ch))
 
-        # District code (digits only) → FIX YOUR OVERLAP ISSUE HERE
-        for i in [2, 3]:
-            if i < len(chars):
-                if chars[i] in ['I', 'L']:
-                    chars[i] = '1'
-                elif chars[i] == 'H':     # H misread instead of 4
-                    chars[i] = '4'
-                elif chars[i] == 'O':
-                    chars[i] = '0'
+    corrected_text = "".join(corrected)
 
-        # Series code (letters only)
-        for i in [4, 5]:
-            if i < len(chars):
-                if chars[i] in ['0', '1', '2', '5', '8']:
-                    chars[i] = {
-                        '0': 'O',
-                        '1': 'I',
-                        '2': 'Z',
-                        '5': 'S',
-                        '8': 'B'
-                    }.get(chars[i], chars[i])
-
-        # Last 4 digits
-        for i in range(len(chars) - 4, len(chars)):
-            if i >= 0:
-                if chars[i] in ['O', 'Q', 'D']:
-                    chars[i] = '0'
-                elif chars[i] in ['I', 'L']:
-                    chars[i] = '1'
-                elif chars[i] == 'S':
-                    chars[i] = '5'
-                elif chars[i] == 'B':
-                    chars[i] = '8'
-
-        text = "".join(chars)
-
-    # 8️⃣ Final Indian number plate validation
-    pattern = r'[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}'
-    match = re.search(pattern, text)
+    # 8️⃣ STRICT PLATE MATCH ONLY
+    match = PLATE_PATTERN.search(corrected_text)
 
     if match:
         return match.group()
 
-    return text if len(text) >= 6 else "UNKNOWN"
+    # ❌ Do not return noisy / partial text
+    return "UNKNOWN"

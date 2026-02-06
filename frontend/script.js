@@ -21,7 +21,6 @@ async function sendImage() {
     }
 
     const formData = new FormData();
-    // 🔴 MUST MATCH api.py → request.files["image"]
     formData.append("image", file);
 
     try {
@@ -30,11 +29,8 @@ async function sendImage() {
             body: formData
         });
 
-        // API reachable but request failed
         if (!response.ok) {
-            const errText = await response.text();
-            console.error("API error:", errText);
-            alert("Image could not be processed. Try a JPG/PNG image.");
+            alert("Image could not be processed.");
             return;
         }
 
@@ -43,22 +39,19 @@ async function sendImage() {
 
         // Vehicle type
         document.getElementById("vehicleType").innerText =
-            data.vehicle_detected
-                ? data.vehicle_type
-                : "Not Detected";
+            data.vehicle_detected ? data.vehicle_type : "Not Detected";
+
+        // Vehicle color
+        document.getElementById("vehicleColor").innerText =
+            data.vehicle_color ? data.vehicle_color : "N/A";
 
         // Sugarcane
         document.getElementById("sugarcane").innerText =
             data.sugarcane_detected ? "Yes" : "No";
 
-        // Number plate text (OCR)
-        if (data.number_plate) {
-            if (data.plate_text && data.plate_text !== "UNKNOWN") {
-                document.getElementById("plate").innerText = data.plate_text;
-            } else {
-                document.getElementById("plate").innerText =
-                    "Detected (Text unclear)";
-            }
+        // ✅ NUMBER PLATE (FIXED LOGIC)
+        if (data.number_plate && data.number_plate !== "UNKNOWN") {
+            document.getElementById("plate").innerText = data.number_plate;
         } else {
             document.getElementById("plate").innerText = "Not Detected";
         }
@@ -67,7 +60,6 @@ async function sendImage() {
         document.getElementById("plateColor").innerText =
             data.plate_color ? data.plate_color : "N/A";
 
-        // Show popup
         popup.style.display = "flex";
 
     } catch (error) {
@@ -76,7 +68,7 @@ async function sendImage() {
     }
 }
 
-// Close result popup
+// Close popup
 function closePopup() {
     popup.style.display = "none";
 }
