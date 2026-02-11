@@ -3,62 +3,57 @@ os.environ["ULTRALYTICS_DISABLE_CV2_IMSHOW"] = "1"
 
 import cv2
 import time
+
 from src.inference import detect
 from src.ocr_processor import extract_text
 from src.plate_color_detector import detect_color
 from src.vehicle_color_detector import detect_vehicle_color
 
 
-# ==========================
-# MODEL CLASS MAP
-# ==========================
 CLASS_NAMES = {
-    0: "tractor",
-    1: "truck",
-    2: "bullock_cart",
-    3: "number_plate",
+    0: "TRACTOR",
+    1: "TRUCK",
+    2: "BULLOCK CART",
+    3: "NUMBER PLATE",
+    4: "SUGARCANE"
 }
 
 
-def inside(b1, b2):
-    """Check if center of b1 is inside b2"""
-    x1, y1, x2, y2 = b1
-    X1, Y1, X2, Y2 = b2
-    cx = (x1 + x2) // 2
-    cy = (y1 + y2) // 2
-    return X1 <= cx <= X2 and Y1 <= cy <= Y2
+def plate_inside_vehicle(plate_bbox, vehicle_bbox):
+    px1, py1, px2, py2 = plate_bbox
+    vx1, vy1, vx2, vy2 = vehicle_bbox
+    cx = (px1 + px2) // 2
+    cy = (py1 + py2) // 2
+    return vx1 <= cx <= vx2 and vy1 <= cy <= vy2
 
 
 def vehicle_score(v):
-    """Boost truck confidence slightly"""
     score = v["conf"]
-    if v["class"] == 1:  # truck
+    if v["class"] == 1:  # boost truck
         score += 0.15
     return score
 
 
-def run_camera(source):
-    print(f"[INFO] Opening RTSP stream: {source}")
+def run_camera(source=0):
+    print("[INFO] Starting camera...")
 
-    cap = cv2.VideoCapture(source, cv2.CAP_FFMPEG)
-    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    cap = cv2.VideoCapture(source)
+    time.sleep(2)
 
     if not cap.isOpened():
-        raise RuntimeError("❌ Unable to open RTSP stream")
+        raise RuntimeError("❌ Camera not opened")
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("⚠️ Stream lost, reconnecting...")
-            time.sleep(1)
-            cap.release()
-            cap = cv2.VideoCapture(source, cv2.CAP_FFMPEG)
-            continue
+            print("⚠️ Frame not received")
+            break
 
         frame = cv2.resize(frame, (960, 540))
         detections = detect(frame)
 
-        vehicles, plates = [], []
+        vehicles = []
+        plates = []
 
         for d in detections:
             if d["class"] in [0, 1, 2]:
@@ -67,34 +62,21 @@ def run_camera(source):
                 plates.append(d)
 
         if vehicles:
-            v = max(vehicles, key=vehicle_score)
-            vx1, vy1, vx2, vy2 = v["bbox"]
+            vehicle = max(vehicles, key=vehicle_score)
+            vx1, vy1, vx2, vy2 = vehicle["bbox"]
 
-            # ==========================
-            # VEHICLE TYPE FIX
-            # ==========================
-            w = vx2 - vx1
-            h = vy2 - vy1
-            aspect = w / max(h, 1)
+            vehicle_type = CLASS_NAMES.get(vehicle["class"], "UNKNOWN")
 
-            vtype = CLASS_NAMES[v["class"]]
-            if vtype == "tractor" and aspect > 1.6:
-                vtype = "truck"
-
-            # ==========================
-            # VEHICLE COLOR
-            # ==========================
+            # 🔹 Vehicle color
             vehicle_img = frame[vy1:vy2, vx1:vx2]
-            vcolor = detect_vehicle_color(vehicle_img, vtype)
+            vehicle_color = detect_vehicle_color(vehicle_img, vehicle_type.lower())
 
-            # ==========================
-            # NUMBER PLATE
-            # ==========================
-            plate_text = "NO PLATE"
+            # 🔹 Plate detection
+            plate_text = "NOT FOUND"
             plate_color = ""
 
             for p in plates:
-                if inside(p["bbox"], v["bbox"]):
+                if plate_inside_vehicle(p["bbox"], vehicle["bbox"]):
                     px1, py1, px2, py2 = p["bbox"]
                     plate_img = frame[py1:py2, px1:px2]
                     if plate_img.size > 0:
@@ -102,14 +84,17 @@ def run_camera(source):
                         plate_color = detect_color(plate_img)
                     break
 
-            # ==========================
-            # FINAL LABEL
-            # ==========================
-            label = f"{vtype.upper()} | {vcolor} | {plate_text}"
+            # 🔹 LABEL (exactly like your screenshot)
+            label = f"{vehicle_type} | {vehicle_color}"
+            if plate_text != "UNKNOWN":
+                label += f" | {plate_text}"
             if plate_color:
                 label += f" | {plate_color}"
 
+            # 🔹 DRAW BOX
             cv2.rectangle(frame, (vx1, vy1), (vx2, vy2), (0, 255, 0), 2)
+
+            # 🔹 DRAW TEXT
             cv2.putText(
                 frame,
                 label,
@@ -120,7 +105,8 @@ def run_camera(source):
                 2
             )
 
-        cv2.imshow("Agricultural Vehicle Monitoring (RTSP)", frame)
+        cv2.imshow("Agricultural Vehicle Monitoring", frame)
+
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
